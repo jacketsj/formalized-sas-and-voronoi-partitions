@@ -29,18 +29,18 @@ from any point `x k` the other points get closer along the sequence. -/
 def IsSAS (D : α → α → ℝ) {ℓ : ℕ} (x : Fin ℓ → α) : Prop :=
   Function.Injective x ∧ ∀ i j k : Fin ℓ, i < j → k ≠ i → D (x k) (x j) ≤ D (x k) (x i)
 
-/-- A *strict* SAS: as `IsSAS`, with `<` in place of `≤`. -/
+/-- A *strict* SAS: as `IsSAS`, with `<` in place of `≤`. Distinctness is automatic in this case. -/
 def IsStrictSAS (D : α → α → ℝ) {ℓ : ℕ} (x : Fin ℓ → α) : Prop :=
   ∀ i j k : Fin ℓ, i < j → k ≠ i → D (x k) (x j) < D (x k) (x i)
 
-/-- Every SAS whose points are among the points of `x` has at most `L` points. -/
+/-- L_X definition: Every SAS whose points are among the points of `x` has at most `L` points. -/
 def SASLengthLE (D : α → α → ℝ) (x : Fin n → α) (L : ℕ) : Prop :=
-  ∀ (ℓ : ℕ) (y : Fin ℓ → α), IsSAS D y → (∀ i, y i ∈ Set.range x) → ℓ ≤ L
+  ∀ (ℓ : ℕ) (y : Fin ℓ → α), IsSAS D y → (∀ i, y i ∈ Set.range x) → ℓ ≤ L /-! Set.range gets the range of a function -/
 
 /-! ## Voronoi partitions -/
 
 /-- The point `y` *prefers* the site `x a` to the site `x b`: it is closer to `x a`, with ties
-broken by ID. -/
+broken by ID. (Note that α and a are different characters, but can look similar in some fonts.) -/
 abbrev Prefers (D : α → α → ℝ) (x : Fin n → α) (y : α) (a b : Fin n) : Prop :=
   D y (x a) < D y (x b) ∨ (D y (x a) = D y (x b) ∧ a < b)
 
@@ -53,8 +53,8 @@ def voronoiSide (D : α → α → ℝ) (x : Fin n → α) (a b : Fin n) : Finse
 def HasBalancedVoronoiPartition (D : α → α → ℝ) (x : Fin n → α) (β : ℝ) : Prop :=
   ∃ a b, a ≠ b ∧ β * n ≤ (voronoiSide D x a b).card ∧ β * n ≤ (voronoiSide D x b a).card
 
-/-- The Voronoi cell of the center `p` among the centers `P`: the IDs of the points strictly
-closer to `x p` than to every other center. -/
+/-- The (strict) Voronoi cell of the center `p` among the centers `P`: the IDs of the points strictly
+closer to `x p` than to every other center. This can be strict since it is only used to state a lower bound. -/
 def voronoiCell (D : α → α → ℝ) (x : Fin n → α) (P : Finset (Fin n)) (p : Fin n) :
     Finset (Fin n) :=
   Finset.univ.filter fun k => ∀ q ∈ P, q ≠ p → D (x k) (x p) < D (x k) (x q)
@@ -63,7 +63,7 @@ def voronoiCell (D : α → α → ℝ) (x : Fin n → α) (P : Finset (Fin n)) 
 
 /-- One move of opportunistic greedy search for the target `q` in the directed graph with
 out-neighbour sets `out`: from `v ≠ q`, move to the out-neighbour `w` that `x q` prefers to all
-other out-neighbours (even if `w` is farther from `x q` than `v`). This move is unique. -/
+other out-neighbours (even if `w` is farther from `x q` than `v`). This move is unique due to tiebreaking. -/
 def IsGreedyMove (D : α → α → ℝ) (x : Fin n → α) (out : Fin n → Finset (Fin n))
     (q v w : Fin n) : Prop :=
   v ≠ q ∧ w ∈ out v ∧ ∀ w' ∈ out v, w' ≠ w → Prefers D x (x q) w w'
@@ -72,7 +72,7 @@ def IsGreedyMove (D : α → α → ℝ) (x : Fin n → α) (out : Fin n → Fin
 def GreedyReachesWithin (D : α → α → ℝ) (x : Fin n → α) (out : Fin n → Finset (Fin n))
     (s q : Fin n) (T : ℕ) : Prop :=
   ∃ t ≤ T, ∃ v : Fin (t + 1) → Fin n, v 0 = s ∧ v (Fin.last t) = q ∧
-    ∀ i : Fin t, IsGreedyMove D x out q (v i.castSucc) (v i.succ)
+    ∀ i : Fin t, IsGreedyMove D x out q (v i.castSucc) (v i.succ) /-! castSucc does not change the value, only the proof of the upper bound allowing it to be a Fin k type -/
 
 /-! ## Aspect ratio -/
 
@@ -80,9 +80,10 @@ def GreedyReachesWithin (D : α → α → ℝ) (x : Fin n → α) (out : Fin n 
 def AspectRatioLT (D : α → α → ℝ) {ℓ : ℕ} (x : Fin ℓ → α) (b : ℝ) : Prop :=
   ∃ m > 0, ∀ i j : Fin ℓ, i ≠ j → m ≤ D (x i) (x j) ∧ D (x i) (x j) < b * m
 
-/-- All pairwise distances lie in `[m, b m]` for some `m > 0` (aspect ratio at most `b`). -/
+/-- All pairwise distances lie in `[m, b m]` for some `m > 0` (aspect ratio at most `b`).
+Only change compared to above is closed vs half-open interval. -/
 def AspectRatioLE (D : α → α → ℝ) {ℓ : ℕ} (x : Fin ℓ → α) (b : ℝ) : Prop :=
-  ∃ m > 0, ∀ i j : Fin ℓ, i ≠ j → m ≤ D (x i) (x j) ∧ D (x i) (x j) ≤ b * m
+  ∃ m > 0, ∀ i j : Fin ℓ, i ≠ j → m ≤ D (x i) (x j) ∧ D (x i) (x j) ≤ b * m 
 
 /-! ## `ℓ_p` distances on `Fin d → ℝ` -/
 

@@ -1,25 +1,26 @@
 # Formalized self-approaching sequences and balanced Voronoi partitions
 
-A Lean 4 formalization of the results, several with stronger constants, of
+This repository formalizes the results from
 *Balanced Voronoi Partitions, Self-Approaching Sequences, and Applications to Efficiently Navigable Graphs*
 by Jonathan Conroy, Mohammadreza Daneshvaramoli, Cameron Musco, Christopher Musco, and Jack Spalding-Jamieson.
+Many of the constants proven are improved compare to the paper.
 
-- A sequence of distinct points $x_1, \dots, x_\ell$ is *self-approaching* (an SAS) if $D(x_k, x_j) \le D(x_k, x_i)$ whenever $i < j$ and $k \ne i$ (*strict*: $<$).
-- The *balance* of $n \ge 2$ points is the largest $\beta$ such that two of them split all $n$ points by closeness (ties broken by ID) with at least $\beta n$ on each side.
+- A sequence of distinct points $x_1, \dots, x_\ell$ is *self-approaching* (an SAS) if $D(x_k, x_j) \le D(x_k, x_i)$ whenever $i < j$ and $k \ne i$.
+- The *balance* of $n \ge 2$ points is the largest $\beta$, such that the voronoi partition induced by a pair of points (ties broken by ID) has at least $\beta n$ points on each side.
 - *Routing* is the number of moves opportunistic greedy search needs between any two points, on a graph of out-degree at most $2$.
-- $L$ is the length of the longest SAS among the given points, and $N_\varepsilon$ is the largest number of points with aspect ratio at most $1 + \varepsilon$.
+- $L$ denotes the length of the longest SAS for a given set of points, and $N_\varepsilon$ is the largest subset of points with aspect ratio at most $1 + \varepsilon$.
 
-Each row is one theorem of [`SelfApproaching/Statements.lean`](SelfApproaching/Statements.lean).
+Each row below is one theorem stated in [`SelfApproaching/Statements.lean`](SelfApproaching/Statements.lean).
 
 ### Euclidean space $\mathbb{R}^d$, $d \ge 1$
 
 | Result | Formalized | Paper | Lean |
 |---|---|---|---|
 | Longest SAS | $< 11d/2$ | $\le 8d$&nbsp;(Thm&nbsp;1) | `sas_length_lt` |
-| Longest strict SAS | $\ge \lceil 9d/4 \rceil$ | $\ge 2d$&nbsp;(§1) | `strict_sas` |
+| Longest strict SAS | $\ge \lceil 9d/4 \rceil$ | $\ge 2d$ | `strict_sas` |
 | Balance | $\ge 1/(21.978d - 1.998)$ | $\ge 1/(32d)$&nbsp;(Thm&nbsp;3) | `balanced` |
 | Balance | $\ge 1/(2 \cdot 3^d)$ | same&nbsp;(Thm&nbsp;12) | `balanced_exp` |
-| Worst-case balance | $\le 1/\lceil 9d/4 \rceil$ | $\le 1/(2d)$&nbsp;(§1) | `balance_tight` |
+| Worst-case balance | $\le 1/\lceil 9d/4 \rceil$ | $\le 1/(2d)$ | `balance_tight` |
 | Routing | $2\lceil (21.978d - 1.998) \ln n \rceil + 1$ | $O(d \log n)$&nbsp;(Thm&nbsp;7) | `navigable` |
 | Centers for all cells $\le n/4$ | $> n/4$ for some $n \ge 2^{\Omega(d)}$ | same&nbsp;(Thm&nbsp;11) | `kcenter` |
 
@@ -28,7 +29,7 @@ Each row is one theorem of [`SelfApproaching/Statements.lean`](SelfApproaching/S
 | Result | Formalized | Paper | Lean |
 |---|---|---|---|
 | Balance | $\ge 1/(3.996L)$ | $\ge 1/(4L)$&nbsp;(Thm&nbsp;2) | `metric_balanced` |
-| Routing | $2\lceil 3.996L \ln n \rceil + 1$ | $O(L \log n)$&nbsp;(§4) | `metric_navigable` |
+| Routing | $2\lceil 3.996L \ln n \rceil + 1$ | $O(L \log n)$ | `metric_navigable` |
 | Longest SAS of aspect ratio $< b$ | $\le N_\varepsilon \lceil \log_{1+\varepsilon} b \rceil$ | same&nbsp;(Thm&nbsp;6) | `metric_aspect` |
 
 ### $\ell_p$ distances on $\mathbb{R}^d$

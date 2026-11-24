@@ -91,8 +91,8 @@ theorem metric_navigable {P : Type*} [MetricSpace P] (n : ℕ) (hn : 1 ≤ n) (x
       ∀ s q, GreedyReachesWithin dist x out s q (2 * ⌈3.996 * L * log n⌉₊ + 1) :=
   Proof.navigable_of_sas_bound n hn x hx L hL
 
-/-- If every family of distinct points with aspect ratio at most `1 + ε` has at most `N` points,
-then every SAS with aspect ratio less than `b` has at most `N ⌈log_{1+ε} b⌉` points. -/
+/-- If every subset of distinct points with aspect ratio at most `1 + ε` has at most `N` points,
+then every SAS over subsets with aspect ratio less than `b` must have at most `N ⌈log_{1+ε} b⌉` points. -/
 theorem metric_aspect {P : Type*} [MetricSpace P] (ε : ℝ) (hε : 0 < ε) (N : ℕ)
     (hN : ∀ (m : ℕ) (y : Fin m → P), Function.Injective y → AspectRatioLE dist y (1 + ε) → m ≤ N)
     (b : ℝ) (hb : 1 < b) (ℓ : ℕ) (x : Fin ℓ → P) (hx : IsSAS dist x)
@@ -115,7 +115,8 @@ theorem lp_strict_sas (p : ℝ) (hp : 0 < p) (hp2 : p ≠ 2) :
   Proof.lp_strict_sas_exponential p hp hp2
 
 /-- For `1 ≤ p < ∞` there is `C` such that for the `ℓ_p` distance every SAS with aspect ratio less
-than `b` has at most `C d^{3q/2} ⌈ln b⌉` points, where `q = (2p+2)/(2p-1)`. -/
+than `b` has at most `C d^{3q/2} ⌈ln b⌉` points, where `q = (2p+2)/(2p-1)`.
+Note that this doesn't state the second half of Theorem 5 from the paper (although the needed part is formalized above). -/
 theorem lp_aspect (p : ℝ) (hp : 1 ≤ p) :
     ∃ C > 0, ∀ d : ℕ, 1 ≤ d → ∀ b : ℝ, 1 < b → ∀ (ℓ : ℕ) (x : Fin ℓ → (Fin d → ℝ)),
       IsSAS (lpDist p) x → AspectRatioLT (lpDist p) x b →
